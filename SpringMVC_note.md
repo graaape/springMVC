@@ -47,7 +47,7 @@
     
 9.  DispatcherServlet调用视图解析器(ViewResolver)来解析HandlerAdapter传递的逻辑视图名。
     
-    > ##### 视图解析器：
+    > **视图解析器**：
     >
     > 1. 获取了ModelAndView的数据。
     >
