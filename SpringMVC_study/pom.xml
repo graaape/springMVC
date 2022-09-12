@@ -11,6 +11,8 @@
     <modules>
         <module>springmvc_01_servlet</module>
         <module>springmvc_02_hellomvc</module>
+        <module>springmvc_03_annotation</module>
+        <module>springmvc_04_controller</module>
     </modules>
 
     <properties>
@@ -46,5 +48,24 @@
             <version>1.2</version>
         </dependency>
     </dependencies>
-
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    </build>
 </project>

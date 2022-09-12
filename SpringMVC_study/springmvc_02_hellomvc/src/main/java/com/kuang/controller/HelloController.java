@@ -6,7 +6,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//注意：这里我们先导入Controller接口
+//注意：这里先导入Controller接口
 public class HelloController implements Controller {
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -14,9 +14,11 @@ public class HelloController implements Controller {
         ModelAndView mv = new ModelAndView();
 
         //封装对象，放在ModelAndView中。Model
-        mv.addObject("msg","HelloSpringMVC!");
+        String result="HelloSpringMVC!";
+        mv.addObject("msg",result);
         //封装要跳转的视图，放在ModelAndView中
-        mv.setViewName("hello"); //: /WEB-INF/jsp/hello.jsp
+//        mv.setViewName("hello");
+        mv.setViewName("test"); //: /WEB-INF/jsp/hello.jsp
         return mv;
     }
 
