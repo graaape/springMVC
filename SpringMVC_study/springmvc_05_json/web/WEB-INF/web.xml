@@ -15,7 +15,7 @@
         <servlet-name>springmvc</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-<!--    配置springMVC的乱码过滤器-->
+    <!--    配置springMVC的乱码过滤器-->
     <filter>
         <filter-name>encoding</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

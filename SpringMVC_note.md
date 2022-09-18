@@ -1,4 +1,4 @@
-﻿﻿﻿# Spring MVC 笔记
+﻿﻿﻿﻿﻿﻿# Spring MVC 笔记
 ## 什么是MVC
 - MVC是模型（Model）、视图（View）、控制器（Controller）的简写，是一种软件设计规范。
 	- **Model（模型）**：数据模型，提供要展示的数据，因此包含数据和行为，可以认为是领域模型或JavaBean组件（包含数据和行为），不过现在一般都分离开来：Value Object（数据Dao） 和 服务层（行为Service）。也就是模型提供了模型数据查询和模型数据的状态更新等功能，包括数据和业务。
@@ -238,3 +238,313 @@ public class ControllerTest3 {
 ```
 
 访问路径：localhost:8080/项目名/c3/h1
+
+## RESTful 风格
+
+RESTful风格是一个资源定位及资源操作的风格。
+
+使用@PathVariable注解，让方法参数对应绑定到一个URI模板变量上。
+
+```java
+@RequestMapping("/add2/{a}/{b}")
+    public String test2(@PathVariable int a,@PathVariable int b, Model model){
+        int res=a+b;
+        model.addAttribute("msg","结果为"+res);
+        return "test";
+    }
+```
+
+方法级别的注解变体如下：
+
+```java
+@GetMapping
+@PostMapping
+@PutMapping
+@DeleteMapping
+@PatchMapping
+```
+
+## 转发和重定向
+
+### 不使用视图解析器
+
+```java
+@RequestMapping("/m1/t1")
+public String test1(Model model){
+    model.addAttribute("msg","ModelTest1");
+    //转发
+    return "/WEB-INF/jsp/test.jsp";
+}
+
+@RequestMapping("/m1/t2")
+public String test2(Model model){
+    model.addAttribute("msg","ModelTest1");
+    //转发
+    return "forward:/WEB-INF/jsp/test.jsp";
+}
+
+@RequestMapping("/m1/t3")
+public String test3(Model model){
+     model.addAttribute("msg","ModelTest1");
+     //重定向
+     return "redirect:/index.jsp";
+ }
+```
+
+### 使用视图解析器
+
+```java
+@RequestMapping("/h1")
+public String hello(Model model){
+    model.addAttribute("msg","HelloSpringMVCAnnotation!!");
+    //转发
+    return "hello";//被视图解释器处理
+}
+@RequestMapping("/m1/t3")
+public String test3(Model model){
+    model.addAttribute("msg","ModelTest1");
+    //重定向
+    return "redirect:/index.jsp";
+}
+```
+
+## 接收请求参数及数据回显
+
+### 处理提交数据
+
+#### 提交的域名称和处理方法的参数名一致
+
+提交：http://localhost:8080/user/t1?name=xiaoming
+
+处理方法：
+
+```java
+@RequestMapping("/t1")
+    public String test1(String name, Model model){
+//        1.接收前端参数
+        System.out.println("接收到前端的参数为："+name);
+//        2.将返回的结果传递给前端
+        model.addAttribute("msg",name);
+//        3.视图跳转
+        return "test";
+    }
+```
+
+#### 提交的域名称和处理方法的参数名不一致
+
+提交：http://localhost:8080/user/t1?username=xiaoming
+
+处理方法：
+
+```java
+ @RequestMapping("/t1")
+    public String test1(@RequestParam("username") String name, Model model){
+//        1.接收前端参数
+        System.out.println("接收到前端的参数为："+name);
+//        2.将返回的结果传递给前端
+        model.addAttribute("msg",name);
+//        3.视图跳转
+        return "test";
+    }
+```
+
+#### 提交一个对象
+
+要求提交的表单域和对象的属性名一致  , 参数使用对象即可。
+
+实体类：
+
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+    private int id;
+    private String name;
+    private int age;
+}
+```
+
+处理方法：
+
+```java
+//    前端接收的是一个对象
+    @RequestMapping("/t2")
+    public String test2(User user){
+        System.out.println(user);
+        return "test";
+    }
+```
+
+提交：http://localhost:8080/user/t2?name=xiaohong&id=123&age=12
+
+输出：User(id=123, name=xiaohong, age=12)
+
+**注意**：前端传递的参数名需要和对象中的属性名一致，否则返回默认值。
+
+比如，提交：...t2?**name1**=xiaohong&**id1**=123&age=12
+
+​			输出：User(id=0, name=null, age=12)
+
+### 数据显示到前端
+
+#### ModelMap
+
+继承了 LinkedMap ，除了实现了自身的一些方法，同时继承 LinkedMap 的方法和特性。
+
+```java
+@RequestMapping("/t3")
+public String test3(@RequestParam("username") String name,ModelMap map){
+    map.addAttribute("name",name);
+    System.out.println(name);
+    return "test";
+}
+```
+
+#### Model
+
+简化了对Model对象的操作。
+
+```java
+@Controller
+public class HelloController{
+    @RequestMapping("/h1")
+    public String hello(Model model){
+        model.addAttribute("msg","HelloSpringMVCAnnotation!!");
+        return "hello";//被视图解释器处理
+    }
+}
+```
+
+#### ModelAndView
+
+ModelAndView 可以在储存数据的同时，可以进行设置返回的逻辑视图，进行控制展示层的跳转。
+
+```java
+public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        //ModelAndView 模型和视图
+        ModelAndView mv = new ModelAndView();
+
+        //封装对象，放在ModelAndView中。Model
+        String result="HelloSpringMVC!";
+        mv.addObject("msg",result);
+        //封装要跳转的视图，放在ModelAndView中
+//        mv.setViewName("hello");
+        mv.setViewName("test"); //: /WEB-INF/jsp/hello.jsp
+        return mv;
+    }
+```
+
+## 使用过滤器解决乱码问题
+
+在web.xml配置：
+
+```xml
+<filter>
+    <filter-name>encoding</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>utf-8</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>encoding</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+## JSON
+
+### 什么是JSON
+
+- JSON(JavaScript Object Notation, JS 对象标记) 是一种轻量级的数据交换格式。
+- 采用完全独立于编程语言的**文本格式**来存储和表示数据。
+
+### 使用Jackson解析json
+
+```java
+@Controller
+public class UserController {
+    @RequestMapping("/j1")
+    @ResponseBody//不会走视图解析器，会直接返回一个字符串
+    public String json1() throws JsonProcessingException {
+        ObjectMapper mapper=new ObjectMapper();
+        User user=new User("小明",3,"男");
+        String str = mapper.writeValueAsString(user);
+        return str;
+    }
+}
+```
+
+使用@RestController注解就不需要再加@ResponseBody注解。
+
+#### 解决json乱码问题
+
+```xml
+<!--    解决json乱码问题配置-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+                        <property name="failOnEmptyBeans" value="false"/>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+```
+
+#### 编写JsonUtil工具类
+
+可以省去重复代码。
+
+```java
+public class JsonUtils {
+    public static String getJson(Object obj){
+        return getJson(obj,"yyyy-MM-dd HH:mm:ss");
+    }
+    public static String getJson(Object obj,String dateFormat){
+        ObjectMapper mapper=new ObjectMapper();
+        //使用ObjectMapper格式化输出，关闭时间戳
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        //自定义日期格式
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        mapper.setDateFormat(sdf);
+        //ObjectMapper时间解析的默认格式为Timestamp 时间戳
+        try {
+            return mapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+```
+
+### 使用fastjson解析json
+
+```java
+@RequestMapping("/j4")
+@ResponseBody
+public String json4(){
+    List<User> users = new ArrayList<User>();
+    User user1=new User("小明1",3,"男");
+    User user2=new User("小明2",3,"男");
+    User user3=new User("小明3",3,"男");
+    User user4=new User("小明4",3,"男");
+    users.add(user1);
+    users.add(user2);
+    users.add(user3);
+    users.add(user4);
+    String str = JSON.toJSONString(users);
+    return str;
+}
+```
+
+## SSM整合
+
