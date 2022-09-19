@@ -4,8 +4,6 @@
 
 具体配置查看源码。
 
-**配置时注意：DispatcherServlet的context配置文件定位为spring的总配置文件，即一般为applicationContext.xml**
-
 ### 实体类
 
 ```java
