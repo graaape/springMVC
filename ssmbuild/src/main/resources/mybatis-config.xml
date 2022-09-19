@@ -4,9 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 <!--    配置数据源，交给Spring做-->
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
     <typeAliases>
         <package name="com.kuang.pojo"/>
     </typeAliases>
+
     <mappers>
         <mapper class="com.kuang.dao.BookMapper"/>
     </mappers>

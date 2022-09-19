@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿# Spring MVC 笔记
+﻿﻿﻿﻿﻿﻿﻿# Spring MVC 笔记
 ## 什么是MVC
 - MVC是模型（Model）、视图（View）、控制器（Controller）的简写，是一种软件设计规范。
 	- **Model（模型）**：数据模型，提供要展示的数据，因此包含数据和行为，可以认为是领域模型或JavaBean组件（包含数据和行为），不过现在一般都分离开来：Value Object（数据Dao） 和 服务层（行为Service）。也就是模型提供了模型数据查询和模型数据的状态更新等功能，包括数据和业务。
@@ -545,6 +545,4 @@ public String json4(){
     return str;
 }
 ```
-
-## SSM整合
 
